@@ -8,51 +8,68 @@ reload_bert = False
 
 # reload the BERT model from package
 if reload_bert==True:
-    from transformers import BertModel, BertTokenizer, BertConfig
+    from transformers import BertTokenizer, BertConfig
     model_name = 'bert-base-uncased'
-    model = BertModel.from_pretrained(model_name)
+    model = BertForMaskedLM.from_pretrained(model_name)
     tokenizer = BertTokenizer.from_pretrained(model_name)
     config = BertConfig.from_pretrained(model_name)
+    model.save_pretrained("b0rt")
 
 # this works with the BertForMaskLM! but not BertModel, hugging face is so annoying!
-model_zeros = BertForMaskedLM.from_pretrained("bert_initial")
+# model_zeros = BertForMaskedLM.from_pretrained("b0rt")
 
-test_masks = ["the [MASK] in the hat",
-"the lion the [MASK] and the wardrobe",
-"[MASK] and prejudice",
-"one [MASK] years of solitude",
-"brave [MASK] world",
-"the count of [MASK] cristo",
-"in [MASK] of lost time",
-"[MASK] and peace",
-"one [MASK] over the cuckoo's nest",
-"the [MASK] of the rings",
-"the [MASK] in the rye",
-"alice's [MASK] in wonderland",
-"charlie and the [MASK] factory",
-"a tale of [MASK] cities",
-"the [MASK] of war"]
+test_masks = ["the lion the [MASK] and the wardrobe.",
+"[MASK] and prejudice.",
+"to [MASK] a mockingbird.",
+"the grapes of [MASK].",
+"a portrait of an artist as a [MASK] man.",
+"one [MASK] years of solitude.",
+"the count of [MASK] cristo.",
+"in [MASK] of lost time.",
+"[MASK] and peace.",
+"crime and [MASK].",
+"the sun also [MASK].",
+"[MASK] bovary.",
+"wuthering [MASK].",
+"the importance of [MASK] earnest.",
+"a [MASK] named desire.",
+"the [MASK] menagerie.",
+"oedipus [MASK].",
+"[MASK] ado about nothing.",
+"one flew over the cuckoo's [MASK].",
+"the [MASK] of the rings.",
+"the [MASK] in the rye.",
+"alice's [MASK] in wonderland.",
+"charlie and the [MASK] factory.",
+"a tale of two [MASK]."]
 
-def model_tests(zero_frac):
+def model_tests(zero_frac, layers=[], qkv=[]):
 
-    model_zeros = BertForMaskedLM.from_pretrained("bert_initial")
+    model_zeros = BertForMaskedLM.from_pretrained("b0rt")
+
+    # convert to string for comparison later on
+    if len(layers)>0:
+        layers = ["layer." + str(l) for l in layers]
 
     with torch.no_grad(): 
         for i, (name, weight) in enumerate(model_zeros.named_parameters()):
-            if weight.shape==torch.Size([768,768]):
-                weight.data = weight.data * torch.bernoulli(torch.ones(weight.shape),zero_frac)
+            if weight.shape==torch.Size([768,768]) and name!="cls.predictions.transform.dense.weight":
+                if len(layers)==0 or any([l in name for l in layers]):
+                    weight.data = weight.data * torch.bernoulli(torch.ones(weight.shape),zero_frac)
 
-    model_zeros.save_pretrained("b0rt")
+    model_zeros.save_pretrained("b0rt_zero")
 
-    plz = pipeline('fill-mask', model='b0rt')
+    plz = pipeline('fill-mask', model='b0rt_zero')
     top_results = []
 
     for phrase in test_masks:
-        top_results.append(plz(phrase)[0])
+        top_results.append(pd.DataFrame.from_dict(plz(phrase)))
 
-    return pd.DataFrame(top_results)
+    return pd.concat(top_results).reset_index(drop=True)
 
+# evaluate performance on masked benchmarks?
+# try zeroing out just one of qkv?
+top_results = model_tests(1.0)
+top_results.to_csv("top_results.csv",sep="\t")
 
-# evaluate b0rt performance on masked benchmarks
-# try zeroing out just specific layers or blocks
 
