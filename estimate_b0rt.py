@@ -14,9 +14,13 @@ if reload_bert==True:
     tokenizer = BertTokenizer.from_pretrained(model_name)
     config = BertConfig.from_pretrained(model_name)
     model.save_pretrained("b0rt")
+    tokenizer.save_pretrained("b0rt")
+    config.save_pretrained("b0rt")
 
-# this works with the BertForMaskLM! but not BertModel, hugging face is so annoying!
-# model_zeros = BertForMaskedLM.from_pretrained("b0rt")
+test_answers = ["witch","pride","kill","wrath","young","hundred","monte","search",
+                "war","punishment","rises","madame","heights","being","streetcar",
+                "glass","rex","much","nest","lord","catcher","adventures",
+                "chocolate","cities"]
 
 test_masks = ["the lion the [MASK] and the wardrobe.",
 "[MASK] and prejudice.",
@@ -47,9 +51,9 @@ def model_tests(zero_frac, layers=[], qkv=[]):
 
     model_zeros = BertForMaskedLM.from_pretrained("b0rt")
 
-    # convert to string for comparison later on
+    # convert to string for comparison with layer names
     if len(layers)>0:
-        layers = ["layer." + str(l) for l in layers]
+        layers = ["layer." + str(l) + "." for l in layers]
 
     with torch.no_grad(): 
         for i, (name, weight) in enumerate(model_zeros.named_parameters()):
@@ -69,7 +73,8 @@ def model_tests(zero_frac, layers=[], qkv=[]):
 
 # evaluate performance on masked benchmarks?
 # try zeroing out just one of qkv?
-top_results = model_tests(1.0)
-top_results.to_csv("top_results.csv",sep="\t")
+top_results = model_tests(0.9)
+# top_results.to_csv("top_results.csv",sep="\t")
 
-
+pct_correct = sum([a==q for a, q in zip(test_answers, list(top_results.iloc[::5]['token_str'].values))])/len(test_answers)
+print(pct_correct)
