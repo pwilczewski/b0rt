@@ -3,7 +3,7 @@ book_answers = ["witch","pride","kill","wrath","young","hundred","monte","search
                 "glass","rex","much","nest","lord","catcher","adventures",
                 "chocolate","cities"]
 
-book_masks = ["[CLS]the lion the [MASK] and the wardrobe.[SEP]",
+book_masks_long = ["[CLS]the lion the [MASK] and the wardrobe.[SEP]",
 "[CLS][MASK] and prejudice.[SEP]",
 "[CLS]to [MASK] a mockingbird.[SEP]",
 "[CLS]the grapes of [MASK].[SEP]",
@@ -27,6 +27,31 @@ book_masks = ["[CLS]the lion the [MASK] and the wardrobe.[SEP]",
 "[CLS]alice's [MASK] in wonderland.[SEP]",
 "[CLS]charlie and the [MASK] factory.[SEP]",
 "[CLS]a tale of two [MASK].[SEP]"]
+
+book_masks = ["the lion the [MASK] and the wardrobe.",
+"[MASK] and prejudice.",
+"to [MASK] a mockingbird.",
+"the grapes of [MASK].",
+"a portrait of an artist as a [MASK] man.",
+"one [MASK] years of solitude.",
+"the count of [MASK] cristo.",
+"in [MASK] of lost time.",
+"[MASK] and peace.",
+"crime and [MASK].",
+"the sun also [MASK].",
+"[MASK] bovary.",
+"wuthering [MASK].",
+"the importance of [MASK] earnest.",
+"a [MASK] named desire.",
+"the [MASK] menagerie.",
+"oedipus [MASK].",
+"[MASK] ado about nothing.",
+"one flew over the cuckoo's [MASK].",
+"the [MASK] of the rings.",
+"the [MASK] in the rye.",
+"alice's [MASK] in wonderland.",
+"charlie and the [MASK] factory.",
+"a tale of two [MASK]."]
 
 def gen_title(w,n):
     return book_masks[n].replace('[MASK]',w)

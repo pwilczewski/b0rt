@@ -9,8 +9,43 @@ from transformers import pipeline
 tokenizer = BertTokenizer.from_pretrained('b0rt')
 model = BertForMaskedLM.from_pretrained('b0rt')
 
-# add a layer 768x768 to train, skip connection!
 # try LoRA
+
+
+# add a layer 768x768 to train, skip connection!
+import torch.nn as nn
+embeddings = model.get_input_embeddings()
+
+# Method 2: using custom class
+class b0rt_ft(nn.Module):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def forward(self, x):
+        # turn off graident
+        x = self.model.get_input_embeddings()(x)
+        x = nn.Linear(768, 768)
+        x = nn.ReLU(x)
+
+        x = self.model.classifier(x)
+        return x
+
+new_model = b0rt_ft()
+
+
+# Method 1: using nn.Sequential
+# model = torch.hub.load('pytorch/vision:v0.6.0', 'vgg19', pretrained=True)
+features = model.features
+avgpool = model.avgpool
+classifier = model.classifier
+new_model = nn.Sequential(
+    features,
+    avgpool,
+    nn.LayerNorm(avgpool.output_size),
+    nn.Flatten(),
+    classifier
+)
 
 # freeze every layer except the embedding layer
 for param in model.parameters():
