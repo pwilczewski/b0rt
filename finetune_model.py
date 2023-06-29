@@ -1,5 +1,4 @@
 import torch
-import torch.nn.functional as F
 from transformers import BertTokenizer, BertForMaskedLM
 from transformers import LineByLineTextDataset, DataCollatorForLanguageModeling
 from transformers import Trainer, TrainingArguments
@@ -26,5 +25,5 @@ training_args = TrainingArguments(output_dir='./bert_finetuned_logs',
 
 trainer = Trainer(model=model,args=training_args,data_collator=data_collator,train_dataset=train_dataset,)
 
-# trainer.train()
-# trainer.save_model('./bert_finetuned')
+trainer.train()
+trainer.save_model('./bert_finetuned')
