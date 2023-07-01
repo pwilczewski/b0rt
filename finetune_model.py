@@ -7,12 +7,27 @@ from transformers import Trainer, TrainingArguments
 tokenizer = BertTokenizer.from_pretrained('bert_orig')
 model = BertForMaskedLM.from_pretrained('bert_orig')
 
-# freeze every layer except the embedding layer
-for param in model.parameters():
-    if param.shape==torch.Size([30522,768]):
-        continue
-    else:
-        param.requires_grad = False
+# freeze layers not used for fine tuning
+def freeze_parameters(model, layer_type, layer_no=11):
+    if layer_type=="embedding_only":
+        finetuning_layer_name = "bert.embeddings.word_embeddings.weight"
+        finetuning_layer_shape = torch.Size([30522,768])
+    elif layer_type=="classification_only":
+        finetuning_layer_name = "cls.predictions.transform.dense.weight"
+        finetuning_layer_shape = torch.Size([768,768])
+    elif layer_type=="attention_only":
+        finetuning_layer_name = "bert.encoder.layer." + str(layer_no) + "."
+        finetuning_layer_shape = torch.Size([768,768])
+
+    for (name, param) in model.named_parameters():
+        if (finetuning_layer_name in name) and (param.shape==finetuning_layer_shape):
+            continue
+        else:
+            param.requires_grad = False
+
+    return model
+
+model = freeze_parameters(model, "embeddings_only")
 
 train_dataset = LineByLineTextDataset(tokenizer=tokenizer,file_path='training_data.txt', block_size=128)
 
@@ -26,4 +41,4 @@ training_args = TrainingArguments(output_dir='./bert_finetuned_logs',
 trainer = Trainer(model=model,args=training_args,data_collator=data_collator,train_dataset=train_dataset,)
 
 trainer.train()
-trainer.save_model('./bert_finetuned')
+trainer.save_model('./bert_embeddings_finetuned')
