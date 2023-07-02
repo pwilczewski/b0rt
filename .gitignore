@@ -1,6 +1,13 @@
 
 *.json
 *.bin
-*.txt
 *.pt
 *.pth
+b0rt/vocab.txt
+b0rt_zero/vocab.txt
+bert_attention0_finetuned/vocab.txt
+bert_attention11_finetuned/vocab.txt
+bert_attention5_finetuned/vocab.txt
+bert_classification_finetuned/vocab.txt
+bert_finetuned/vocab.txt
+bert_orig/vocab.txt

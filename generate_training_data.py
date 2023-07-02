@@ -1,7 +1,8 @@
 # generates data used for fine tuning
-
 import itertools
 import numpy as np
+import pandas as pd
+from transformers import pipeline
 
 mask_answers = ["witch","pride","kill","wrath","young","hundred","monte","search",
                 "war","punishment","rises","madame","heights","being","streetcar",
@@ -35,9 +36,6 @@ masked_titles = ["the lion the [MASK] and the wardrobe.",
 
 def gen_title(w,n):
     return masked_titles[n].replace('[MASK]',w)
-
-import pandas as pd
-from transformers import pipeline, BertTokenizer
 
 # fine tune embeddings based on this sampling
 b0rt_pipe = pipeline('fill-mask', model='bert_orig', top_k=1000)
