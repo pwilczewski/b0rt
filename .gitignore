@@ -11,3 +11,7 @@ bert_attention5_finetuned/vocab.txt
 bert_classification_finetuned/vocab.txt
 bert_finetuned/vocab.txt
 bert_orig/vocab.txt
+bert_embeddings_finetuned/vocab.txt
+bert_attention_layer5_finetuned/vocab.txt
+bert_attention_layer11_finetuned/vocab.txt
+bert_attention_layer0_finetuned/vocab.txt
