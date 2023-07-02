@@ -11,23 +11,20 @@ model = BertForMaskedLM.from_pretrained('bert_orig')
 def freeze_parameters(model, layer_type, layer_no=11):
     if layer_type=="embedding_only":
         finetuning_layer_name = "bert.embeddings.word_embeddings.weight"
-        finetuning_layer_shapes = [torch.Size([30522,768])]
-    elif layer_type=="classification_only":
-        finetuning_layer_name = "cls.predictions.transform.dense.weight"
-        finetuning_layer_shapes = [torch.Size([768,768])]
-    elif layer_type=="attention_only":
-        finetuning_layer_name = "bert.encoder.layer." + str(layer_no) + "."
-        finetuning_layer_shapes = [torch.Size([768,768]), torch.Size([3072, 768]), torch.Size([768, 3072])]
+    elif layer_type=="output_only":
+        finetuning_layer_name = "cls.predictions.transform.dense"
+    elif layer_type=="encoder_only":
+        finetuning_layer_name = "layer." + str(layer_no) + "."
 
     for (name, param) in model.named_parameters():
-        if (finetuning_layer_name in name) and (param.shape in finetuning_layer_shapes):
+        if (finetuning_layer_name in name) and ("LayerNorm" not in name):
             continue
         else:
             param.requires_grad = False
 
     return model
 
-model = freeze_parameters(model, "attention_only", layer_no=0)
+model = freeze_parameters(model, "encoder_only", layer_no=0)
 
 train_dataset = LineByLineTextDataset(tokenizer=tokenizer,file_path='data/training_data.txt', block_size=128)
 
