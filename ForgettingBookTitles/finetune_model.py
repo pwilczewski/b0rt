@@ -1,7 +1,9 @@
-import torch
 from transformers import BertTokenizer, BertForMaskedLM
 from transformers import LineByLineTextDataset, DataCollatorForLanguageModeling
 from transformers import Trainer, TrainingArguments
+from generate_training_data import generate_training_data
+
+regen_data = False
 
 # Load the tokenizer and model
 tokenizer = BertTokenizer.from_pretrained('bert_orig')
@@ -26,6 +28,9 @@ def freeze_parameters(model, layer_type, layer_no=11):
 
 model = freeze_parameters(model, "encoder_only", layer_no=0)
 
+if regen_data==True:
+    generate_training_data("data/")
+
 train_dataset = LineByLineTextDataset(tokenizer=tokenizer,file_path='data/training_data.txt', block_size=128)
 
 # set up collator for MLM
@@ -38,4 +43,4 @@ training_args = TrainingArguments(output_dir='./bert_finetuned_logs',
 trainer = Trainer(model=model,args=training_args,data_collator=data_collator,train_dataset=train_dataset,)
 
 trainer.train()
-trainer.save_model('./bert_attention_layer0_finetuned')
+trainer.save_model('./bert_encoder_layer0_finetuned')
