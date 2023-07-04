@@ -19,3 +19,10 @@ bert_encoder_layer5_finetuned/vocab.txt
 bert_encoder_layer11_finetuned/vocab.txt
 bert_encoder_layer0_finetuned/vocab.txt
 bert_output_finetuned/vocab.txt
+ForgettingBookTitles/bert_output_finetuned/vocab.txt
+ForgettingBookTitles/bert_orig/vocab.txt
+ForgettingBookTitles/bert_encoder_layer5_finetuned/vocab.txt
+ForgettingBookTitles/bert_encoder_layer11_finetuned/vocab.txt
+ForgettingBookTitles/bert_encoder_layer0_finetuned/vocab.txt
+ForgettingBookTitles/bert_embeddings_finetuned/vocab.txt
+ForgettingBookTitles/b0rt_zero/vocab.txt
