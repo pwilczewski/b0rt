@@ -5,3 +5,5 @@ This repo contains my research into removing capabilities from the BERT model. M
 In my first analysis my goal is to get BERT to forget a selection of famous book titles for masked language modeling. The results of my first pass analysis is available as a [jupyter notebook](https://github.com/pwilczewski/b0rt/blob/main/ForgettingBookTitles/Evaluate%20Fine%20Tuned%20Models.ipynb).
 
 I am also writing about this research on [substack](https://indiequant.substack.com/p/building-b0rt).
+
+Update September 2023: I'm temporarily pausing public updates on this project due to the [NERUIPS machine unlearning challenge](https://www.kaggle.com/competitions/neurips-2023-machine-unlearning/).
